@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self';"
+    />
+    <title>EasyRoo</title>
+    <script src="theme-boot.js"></script>
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <div id="titlebar"></div>
+
+    <div id="app">
+      <nav id="sidebar" aria-label="EasyRoo">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-name">EasyRoo</span>
+        </div>
+
+        <button class="nav-item" data-view="routines">
+          <span class="nav-icon" aria-hidden="true">▤</span><span data-i18n="nav.routines"></span>
+        </button>
+        <button class="nav-item" data-view="runs">
+          <span class="nav-icon" aria-hidden="true">≡</span><span data-i18n="nav.runs"></span>
+        </button>
+        <button class="nav-item" data-view="stats">
+          <span class="nav-icon" aria-hidden="true">◫</span><span data-i18n="stats.title"></span>
+        </button>
+        <button class="nav-item" data-view="mcp">
+          <span class="nav-icon" aria-hidden="true">⊞</span><span data-i18n="nav.mcp"></span>
+        </button>
+        <button class="nav-item" data-view="settings">
+          <span class="nav-icon" aria-hidden="true">⚙</span><span data-i18n="nav.settings"></span>
+        </button>
+
+        <div class="rail-foot">
+          <div>
+            <p class="seg-label" id="lang-label" data-i18n="nav.language"></p>
+            <div class="seg" role="group" aria-labelledby="lang-label">
+              <button class="seg-btn" data-lang-choice="system" aria-pressed="false" data-i18n="nav.theme.system"></button>
+              <button class="seg-btn" data-lang-choice="ja" aria-pressed="false">日本語</button>
+              <button class="seg-btn" data-lang-choice="en" aria-pressed="false">English</button>
+            </div>
+          </div>
+
+          <div>
+            <p class="seg-label" id="theme-label" data-i18n="nav.appearance"></p>
+            <div class="seg" role="group" aria-labelledby="theme-label">
+              <button class="seg-btn" data-theme-choice="system" aria-pressed="false" data-i18n="nav.theme.system"></button>
+              <button class="seg-btn" data-theme-choice="light" aria-pressed="false" data-i18n="nav.theme.light"></button>
+              <button class="seg-btn" data-theme-choice="dark" aria-pressed="false" data-i18n="nav.theme.dark"></button>
+            </div>
+          </div>
+
+          <div id="status-chip" class="status-chip">
+            <span id="status-dot" class="dot" aria-hidden="true"></span>
+            <span id="status-text" data-i18n="status.starting"></span>
+          </div>
+
+          <button id="btn-emergency" class="btn btn-danger btn-block" data-i18n="nav.emergencyStop"></button>
+          <p class="hint" data-i18n="nav.emergencyHint"></p>
+        </div>
+      </nav>
+
+      <main id="main">
+        <div id="view"></div>
+      </main>
+    </div>
+
+    <div id="toasts" role="status" aria-live="polite"></div>
+
+    <div id="modal-backdrop" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div id="modal">
+        <div id="modal-head">
+          <h2 id="modal-title"></h2>
+          <button id="modal-close" class="icon-btn" data-i18n-aria="common.close">✕</button>
+        </div>
+        <div id="modal-body"></div>
+        <div id="modal-foot"></div>
+      </div>
+    </div>
+
+    <script src="../shared/i18n.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

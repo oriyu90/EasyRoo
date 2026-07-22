@@ -1,0 +1,109 @@
+{
+  "name": "easyroo",
+  "productName": "EasyRoo",
+  "version": "1.0.0",
+  "description": "ローカルLLM / OpenAI互換APIで動く、Mac向けルーティーンAIアプリ",
+  "author": {
+    "name": "yuki_orita"
+  },
+  "license": "MIT",
+  "main": "src/main/index.js",
+  "bin": {
+    "easyroo": "bin/easyroo.js"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/run-tests.js",
+    "dist": "electron-builder --mac dmg --arm64",
+    "lint": "eslint src bin test",
+    "check": "npm run lint && npm test",
+    "icon": "node assets/make-icon.js && rm -rf assets/icon.iconset && mkdir -p assets/icon.iconset && for s in 16 32 128 256 512; do sips -z $s $s assets/icon.png --out assets/icon.iconset/icon_${s}x${s}.png >/dev/null; d=$((s*2)); sips -z $d $d assets/icon.png --out assets/icon.iconset/icon_${s}x${s}@2x.png >/dev/null; done && iconutil -c icns assets/icon.iconset -o assets/icon.icns && rm -rf assets/icon.iconset && echo \"assets/icon.icns を生成しました\""
+  },
+  "devDependencies": {
+    "electron": "43.1.1",
+    "electron-builder": "26.15.3",
+    "eslint": "^9.39.5",
+    "globals": "^16.5.0"
+  },
+  "build": {
+    "appId": "dev.yukiorita.easyroo",
+    "productName": "EasyRoo",
+    "copyright": "Copyright (c) 2026 yuki_orita. MIT License.",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "src/**/*",
+      "bin/**/*",
+      "assets/icon.icns",
+      "package.json",
+      "LICENSE.md"
+    ],
+    "extraMetadata": {
+      "main": "src/main/index.js"
+    },
+    "asarUnpack": [
+      "bin/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "LICENSE.md",
+        "to": "licenses/EasyRoo-LICENSE.md"
+      },
+      {
+        "from": "THIRD-PARTY-LICENSES.md",
+        "to": "licenses/THIRD-PARTY-LICENSES.md"
+      },
+      {
+        "from": "node_modules/electron/dist/LICENSE",
+        "to": "licenses/Electron-LICENSE.txt"
+      },
+      {
+        "from": "node_modules/electron/dist/LICENSES.chromium.html",
+        "to": "licenses/LICENSES.chromium.html"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "assets/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "identity": null,
+      "extendInfo": {
+        "LSUIElement": false,
+        "NSAppleEventsUsageDescription": "EasyRoo はルーティーン実行のためにシェルコマンドを実行します。",
+        "NSLocalNetworkUsageDescription": "EasyRoo は、同一ネットワーク上の別のデバイスで動作する LM Studio などの OpenAI 互換サーバや MCP サーバへ接続するために、ローカルネットワークへのアクセスを使用します。",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        },
+        "NSBonjourServices": [
+          "_http._tcp",
+          "_https._tcp"
+        ]
+      }
+    },
+    "dmg": {
+      "title": "EasyRoo ${version}",
+      "contents": [
+        {
+          "x": 140,
+          "y": 200,
+          "type": "file"
+        },
+        {
+          "x": 420,
+          "y": 200,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
+  }
+}

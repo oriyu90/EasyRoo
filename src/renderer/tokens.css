@@ -1,0 +1,190 @@
+/* Hallmark · macrostructure: Workbench · genre: modern-minimal · tone: utilitarian
+ * theme: Ashwood (custom) · paper-band: light+dark · display-style: geometric-sans · accent-hue: warm 45°
+ * vibe: "warm workshop, one signal, quiet chrome"
+ * pre-emit critique: P5 H5 E5 S4 R5 V4
+ *
+ * EasyRoo デザイントークン。
+ * 配色・書体・余白・モーションの値はすべてここに集約し、app.css は名前で参照するだけにする。
+ * 生の 16 進数や oklch() を app.css へ直接書かないこと(トークンの逸脱＝一貫性の崩壊)。
+ */
+
+:root {
+  /* ---------- 書体 ----------
+   * macOS 標準搭載の書体のみを名前で参照する。フォントファイルは同梱しない。
+   * → オフライン動作が保証され、書体の再頒布ライセンス義務も発生しない。
+   * 表示(Avenir Next) + 本文(Hiragino Sans) + 等幅(SF Mono) の 3 系統。 */
+  --font-display: 'Avenir Next', 'Hiragino Sans', sans-serif;
+  --font-body: 'Hiragino Sans', 'Avenir Next', sans-serif;
+  --font-mono: 'SF Mono', 'Menlo', ui-monospace, monospace;
+
+  /* ---------- 文字サイズ(1.25 倍の等比) ----------
+   * 13px を最小とする。可読性の要件により、これ以下は使わない。 */
+  --text-xs: 0.8125rem;  /* 13px — ラベル・補助 */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px — 本文の基準 */
+  --text-md: 1.25rem;    /* 20px */
+  --text-lg: 1.5625rem;  /* 25px */
+  --text-xl: 1.953rem;   /* 31px */
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.4;
+  --leading-body: 1.65;
+
+  --tracking-tight: -0.02em;
+  --tracking-label: 0.08em;
+
+  --weight-body: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+
+  /* ---------- 余白(4pt スケール) ---------- */
+  --space-2xs: 0.25rem;  /* 4px  */
+  --space-xs: 0.5rem;    /* 8px  */
+  --space-sm: 0.75rem;   /* 12px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+  --space-3xl: 4rem;     /* 64px */
+
+  /* ---------- 角丸 ---------- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-pill: 999px;
+
+  /* ---------- 罫線 ---------- */
+  --rule-hairline: 1px;
+  --rule-thick: 2px;
+
+  /* ---------- 重なり順(6 段階の名前付きスケール) ---------- */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-overlay: 500;
+  --z-modal: 1000;
+  --z-toast: 2000;
+
+  /* ---------- モーション ---------- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  /* ---------- 寸法 ---------- */
+  --control-h: 2.75rem;   /* 44px — タッチ目標の下限。入力欄とボタンで共通 */
+  --control-h-sm: 2.25rem;
+  --rail-w: 15rem;
+  --measure: 68ch;        /* 本文の最大行長 */
+}
+
+/* =========================================================================
+   ライトモード(既定)
+   紙は純白ではなく暖色寄りのオフホワイト。ニュートラルはアンカー色相(75°)へ傾ける。
+   ========================================================================= */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-paper: oklch(97% 0.006 75);      /* 基準面 */
+  --color-paper-2: oklch(94.5% 0.008 75);  /* 一段持ち上げた面(カード) */
+  --color-paper-3: oklch(91.5% 0.009 75);  /* ホバー・入力欄 */
+  --color-rule: oklch(87% 0.010 75);       /* 髪の毛罫 */
+  --color-rule-2: oklch(79% 0.013 75);     /* 入力欄の境界 */
+  --color-muted: oklch(47% 0.013 70);      /* 補助テキスト */
+  --color-neutral: oklch(41% 0.014 70);
+  --color-ink: oklch(24% 0.014 65);        /* 主テキスト */
+  --color-ink-2: oklch(33% 0.014 65);
+
+  /* アクセントは 1 色のみ。画面の 3% 以下に留める。 */
+  --color-accent: oklch(56% 0.17 45);
+  --color-accent-ink: oklch(99% 0.008 75); /* アクセント面に載せる文字色 */
+  --color-accent-soft: oklch(94.5% 0.040 55);
+  --color-accent-strong: oklch(45% 0.16 42); /* accent-soft の上に置く文字色 */
+  --color-focus: oklch(50% 0.18 45);
+
+  /* 状態色。色だけに頼らず、必ず文字ラベルを併記する。 */
+  --color-success: oklch(48% 0.13 150);
+  --color-success-soft: oklch(93% 0.05 150);
+  --color-warn: oklch(56% 0.13 75);
+  --color-warn-soft: oklch(94% 0.06 80);
+  --color-danger: oklch(51% 0.19 25);
+  --color-danger-soft: oklch(94% 0.05 25);
+
+  --shadow-modal: 0 1.5rem 3rem oklch(24% 0.014 65 / 0.18);
+  --shadow-toast: 0 0.5rem 1.5rem oklch(24% 0.014 65 / 0.14);
+}
+
+/* =========================================================================
+   ダークモード
+   色相は変えず、明度と彩度だけを動かす。
+   面の持ち上げは影ではなく「明度を上げる」ことで表す。
+   ========================================================================= */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-paper: oklch(17% 0.008 75);
+  --color-paper-2: oklch(21% 0.009 75);
+  --color-paper-3: oklch(25.5% 0.010 75);
+  --color-rule: oklch(31% 0.010 75);
+  --color-rule-2: oklch(39% 0.012 75);
+  --color-muted: oklch(69% 0.012 70);
+  --color-neutral: oklch(79% 0.010 70);
+  --color-ink: oklch(94% 0.008 75);
+  --color-ink-2: oklch(85% 0.009 75);
+
+  --color-accent: oklch(74% 0.15 52);
+  --color-accent-ink: oklch(19% 0.03 50);
+  --color-accent-soft: oklch(30% 0.055 50);
+  --color-accent-strong: oklch(85% 0.12 55); /* accent-soft の上に置く文字色 */
+  --color-focus: oklch(78% 0.16 52);
+
+  --color-success: oklch(74% 0.13 155);
+  --color-success-soft: oklch(28% 0.05 155);
+  --color-warn: oklch(80% 0.12 80);
+  --color-warn-soft: oklch(30% 0.05 80);
+  --color-danger: oklch(70% 0.16 25);
+  --color-danger-soft: oklch(29% 0.06 25);
+
+  --weight-body: 350; /* 暗い面では明るい文字が太って見えるため落とす */
+
+  --shadow-modal: 0 1.5rem 3rem oklch(8% 0.01 75 / 0.55);
+  --shadow-toast: 0 0.5rem 1.5rem oklch(8% 0.01 75 / 0.45);
+}
+
+/* システム設定に追随する場合(data-theme="system" もしくは未指定) */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='system'] {
+    color-scheme: dark;
+
+    --color-paper: oklch(17% 0.008 75);
+    --color-paper-2: oklch(21% 0.009 75);
+    --color-paper-3: oklch(25.5% 0.010 75);
+    --color-rule: oklch(31% 0.010 75);
+    --color-rule-2: oklch(39% 0.012 75);
+    --color-muted: oklch(69% 0.012 70);
+    --color-neutral: oklch(79% 0.010 70);
+    --color-ink: oklch(94% 0.008 75);
+    --color-ink-2: oklch(85% 0.009 75);
+
+    --color-accent: oklch(74% 0.15 52);
+    --color-accent-ink: oklch(19% 0.03 50);
+    --color-accent-soft: oklch(30% 0.055 50);
+  --color-accent-strong: oklch(85% 0.12 55); /* accent-soft の上に置く文字色 */
+    --color-focus: oklch(78% 0.16 52);
+
+    --color-success: oklch(74% 0.13 155);
+    --color-success-soft: oklch(28% 0.05 155);
+    --color-warn: oklch(80% 0.12 80);
+    --color-warn-soft: oklch(30% 0.05 80);
+    --color-danger: oklch(70% 0.16 25);
+    --color-danger-soft: oklch(29% 0.06 25);
+
+    --weight-body: 350;
+
+    --shadow-modal: 0 1.5rem 3rem oklch(8% 0.01 75 / 0.55);
+    --shadow-toast: 0 0.5rem 1.5rem oklch(8% 0.01 75 / 0.45);
+  }
+}

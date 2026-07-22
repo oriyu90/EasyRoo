@@ -1,0 +1,141 @@
+<!doctype html>
+<!-- 画面確認用のプレビュー。Electron を起動せずに、実物の app.js / app.css を
+     ダミーデータで描画して各ビューの見た目を検証する。配布物には含めない。 -->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>EasyRoo UI プレビュー</title>
+    <script src="../src/renderer/theme-boot.js"></script>
+    <link rel="stylesheet" href="../src/renderer/tokens.css" />
+    <link rel="stylesheet" href="../src/renderer/app.css" />
+  </head>
+  <body>
+    <div id="titlebar"></div>
+    <div id="app">
+      <nav id="sidebar">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">EasyRoo</span></div>
+        <button class="nav-item" data-view="routines"><span class="nav-icon">▤</span><span data-i18n="nav.routines"></span></button>
+        <button class="nav-item" data-view="runs"><span class="nav-icon">≡</span><span data-i18n="nav.runs"></span></button>
+        <button class="nav-item" data-view="stats"><span class="nav-icon">◫</span><span data-i18n="stats.title"></span></button>
+        <button class="nav-item" data-view="mcp"><span class="nav-icon">⊞</span><span data-i18n="nav.mcp"></span></button>
+        <button class="nav-item" data-view="settings"><span class="nav-icon">⚙</span><span data-i18n="nav.settings"></span></button>
+        <div class="rail-foot">
+          <div>
+            <p class="seg-label" id="lang-label" data-i18n="nav.language"></p>
+            <div class="seg" role="group" aria-labelledby="lang-label">
+              <button class="seg-btn" data-lang-choice="system" aria-pressed="false" data-i18n="nav.theme.system"></button>
+              <button class="seg-btn" data-lang-choice="ja" aria-pressed="false">日本語</button>
+              <button class="seg-btn" data-lang-choice="en" aria-pressed="false">English</button>
+            </div>
+          </div>
+          <div>
+            <p class="seg-label" id="theme-label" data-i18n="nav.appearance"></p>
+            <div class="seg" role="group" aria-labelledby="theme-label">
+              <button class="seg-btn" data-theme-choice="system" aria-pressed="false" data-i18n="nav.theme.system"></button>
+              <button class="seg-btn" data-theme-choice="light" aria-pressed="false" data-i18n="nav.theme.light"></button>
+              <button class="seg-btn" data-theme-choice="dark" aria-pressed="false" data-i18n="nav.theme.dark"></button>
+            </div>
+          </div>
+          <div id="status-chip" class="status-chip"><span id="status-dot" class="dot"></span><span id="status-text" data-i18n="status.starting"></span></div>
+          <button id="btn-emergency" class="btn btn-danger btn-block" data-i18n="nav.emergencyStop"></button>
+          <p class="hint" data-i18n="nav.emergencyHint"></p>
+        </div>
+      </nav>
+      <main id="main"><div id="view"></div></main>
+    </div>
+    <div id="toasts"></div>
+    <div id="modal-backdrop" class="hidden">
+      <div id="modal">
+        <div id="modal-head"><h2 id="modal-title">タイトル</h2><button id="modal-close" class="icon-btn">✕</button></div>
+        <div id="modal-body"></div>
+        <div id="modal-foot"></div>
+      </div>
+    </div>
+
+    <script>
+      // --- ダミーのバックエンド ---
+      const R = [
+        {
+          id: 'r1', name: '朝のニュース要約', goal: '主要ニュースを集めて要約をデスクトップに保存する',
+          procedure: '1. SearXNG で検索\n2. 上位5件を要約\n3. ~/Desktop に保存',
+          constraints: '・ファイルの削除は絶対に行わない\n・書き込みは ~/Desktop 配下のみ',
+          enabled: true, isRunning: false, scheduleText: '毎週 月・火・水・木・金 07:30',
+          nextRunAt: '2026-07-23T07:30:00+09:00', lastRunAt: '2026-07-22T07:30:00+09:00', lastStatus: 'success',
+          schedule: { type: 'weekly', time: '07:30', weekdays: [1,2,3,4,5], days: [1], intervalMinutes: 60 },
+          tools: { shell: true, subrun: true, mcpServerIds: ['m1'] }, memory:{enabled:true}, overlapPolicy:'queue', deny:{inherit:true,categories:null,extraPatterns:[],allowPatterns:[],trustedDomains:[]}, model: null, cwd: null, maxSteps: null,
+        },
+        {
+          id: 'r2', name: 'ログの定期整理', goal: '古いログを圧縮してディスクを節約する',
+          enabled: false, isRunning: true, scheduleText: '毎月 1・15日 03:00',
+          nextRunAt: null, lastRunAt: '2026-07-15T03:00:00+09:00', lastStatus: 'failed',
+          schedule: { type: 'monthly', time: '03:00', weekdays: [], days: [1,15], intervalMinutes: 60 },
+          tools: { shell: true, subrun: false, mcpServerIds: [] }, memory:{enabled:false}, overlapPolicy:'restart', deny:{inherit:true,categories:null,extraPatterns:[],allowPatterns:[],trustedDomains:[]},
+        },
+      ];
+      const RUNS = [
+        { id: 'run1', routineName: '朝のニュース要約', status: 'success', startedAt: '2026-07-22T07:30:00+09:00', steps: 6, durationMs: 64000, summary: '5件のニュースを要約し ~/Desktop/news/2026-07-22.md に保存しました。', toolStats:{shell:{calls:4,ok:4,failed:0,totalMs:2400},http_request:{calls:2,ok:2,failed:0,totalMs:1400}}, usage:{prompt:9000,completion:1200,total:10200}, deniedCommands:0, compactions:2, memoryFlushes:2, subruns:3 },
+        { id: 'run2', routineName: 'ログの定期整理', status: 'running', startedAt: '2026-07-22T01:05:00+09:00', steps: 2, durationMs: 18000, summary: '', toolStats:{shell:{calls:2,ok:1,failed:1,totalMs:900}}, usage:{prompt:3000,completion:400,total:3400}, deniedCommands:1, compactions:0, memoryFlushes:0, subruns:0 },
+        { id: 'run3', routineName: 'ログの定期整理', status: 'failed', startedAt: '2026-07-15T03:00:00+09:00', steps: 9, durationMs: 240000, summary: '最大ステップ数 (30) に達したため終了しました。', toolStats:{shell:{calls:9,ok:6,failed:3,totalMs:8000}}, usage:{prompt:22000,completion:2600,total:24600}, deniedCommands:2, compactions:5, memoryFlushes:4, subruns:1 },
+      ];
+      const MCP = [
+        { id: 'm1', name: 'filesystem', transport: 'stdio', command: 'npx', args: ['-y','@modelcontextprotocol/server-filesystem','/Users/yuki/Documents'], enabled: true, status: 'connected', toolCount: 8, error: null, tools: [{name:'read_file'},{name:'write_file'},{name:'list_directory'},{name:'search_files'}] },
+        { id: 'm2', name: 'searxng', transport: 'http', url: 'http://localhost:8888/mcp', enabled: true, status: 'error', toolCount: 0, error: 'MCP HTTP エラー (404): Not Found', tools: [] },
+      ];
+      const DENY = [
+        {id:'destructive',label:'システム破壊・大量削除',description:'rm -rf、find -delete、diskutil eraseDisk、mkfs、dd など',severity:'critical',conditional:null,ruleCount:12,examples:['rm -rf']},
+        {id:'remoteExec',label:'ネットから取得したコードの即実行',description:'curl ... | sh、wget ... | bash など',severity:'critical',conditional:null,ruleCount:3,examples:['curl | sh']},
+        {id:'permissions',label:'権限の一括変更',description:'chmod -R 777、chown -R など',severity:'high',conditional:null,ruleCount:3,examples:['chmod 777']},
+        {id:'gitDestructive',label:'Gitの破壊操作',description:'git reset --hard、git clean -fdx など',severity:'high',conditional:null,ruleCount:6,examples:['git reset --hard']},
+        {id:'systemControl',label:'システム制御',description:'shutdown、reboot、launchctl bootout など',severity:'critical',conditional:null,ruleCount:7,examples:['shutdown']},
+        {id:'network',label:'ネットワーク（信頼ドメインは許可）',description:'ssh、scp、rsync、nc、curl、wget',severity:'medium',conditional:'trustedDomains',ruleCount:1,examples:['network command']},
+        {id:'packageManager',label:'パッケージ管理の破壊操作',description:'brew uninstall、brew cleanup',severity:'medium',conditional:null,ruleCount:3,examples:['brew uninstall']},
+        {id:'privilege',label:'権限昇格',description:'sudo、su',severity:'critical',conditional:null,ruleCount:3,examples:['sudo']},
+      ];
+      const STATS = { period:{days:null,since:null},
+        overall:{runs:24,success:21,failed:2,stopped:1,successRate:87.5,totalDurationMs:1860000,avgDurationMs:77500,totalSteps:142,avgSteps:5.9,deniedCommands:3,
+          tokens:{prompt:184320,completion:29440,total:213760},
+          tools:[{name:'shell',calls:68,ok:64,failed:4,totalMs:41000,avgMs:603},{name:'read_file',calls:22,ok:22,failed:0,totalMs:480,avgMs:22},{name:'http_request',calls:14,ok:13,failed:1,totalMs:9800,avgMs:700},{name:'state_write',calls:9,ok:9,failed:0,totalMs:70,avgMs:8},{name:'mcp__filesystem__search',calls:6,ok:6,failed:0,totalMs:2100,avgMs:350}]},
+        byRoutine:[{routineId:'r1',routineName:'朝のニュース要約',runs:18,successRate:94.4,avgDurationMs:66000},{routineId:'r2',routineName:'ログの定期整理',runs:6,successRate:66.7,avgDurationMs:112000}],
+        recent:[] };
+      const SETTINGS = {
+        providers: [{ id: 'lmstudio', name: 'LM Studio (ローカル)', baseUrl: 'http://localhost:1234/v1', apiKey: '', model: 'qwen/qwen3-coder-next' }],
+        activeProviderId: 'lmstudio', maxSteps: 30, runTimeoutSec: 1800, requestTimeoutSec: 300, temperature: 0.3, contextTokens: 32768, reserveOutputTokens: 4096, reservePromptTokens: 2048,
+        shell: { enabled: true, cwd: '/Users/yuki/Library/Application Support/EasyRoo/workspace', timeoutSec: 120, maxOutputChars: 20000, denyCategories: DENY.map(d=>d.id), trustedDomains:['localhost','github.com','raw.githubusercontent.com'], denyPatterns: [], allowPatterns: [] },
+        api: { enabled: true, port: 8787 }, ui: { theme: 'system', language: 'system' },
+      };
+      const OV = { version: '1.0.0', routines: { total: 2, enabled: 1, running: 1 }, schedulerPaused: false, activeRuns: [], queued: [{routineId:'r1',routineName:'朝のニュース要約',trigger:'schedule',queuedAt:'2026-07-22T08:00:00+09:00'}], mcp: [], provider: SETTINGS.providers[0], nextRun: R[0] };
+
+      window.easyroo = {
+        overview: async () => OV,
+        runtime: async () => ({ port: 8787, token: 'テスト用トークン0123456789abcdef', dataDir: '/Users/yuki/Library/Application Support/EasyRoo' }),
+        routines: { list: async()=>R, get: async(id)=>R.find(r=>r.id===id), create: async()=>({}), update: async()=>({}), remove: async()=>true, setEnabled: async()=>({}), run: async()=>({runId:'run2'}), stop: async()=>1 },
+        runs: { list: async()=>RUNS, get: async()=>({ ...RUNS[1], events: [
+            { t:'2026-07-22T01:05:00+09:00', type:'info', message:'モデル: qwen/qwen3-coder-next / ツール 7個 (MCP 2個)' },
+            { t:'2026-07-22T01:05:01+09:00', type:'step', step:1, of:30 },
+            { t:'2026-07-22T01:05:04+09:00', type:'assistant', text:'まず対象ログの一覧を確認します。' },
+            { t:'2026-07-22T01:05:05+09:00', type:'tool_call', name:'shell', args:{command:'ls -la ~/logs'} },
+            { t:'2026-07-22T01:05:06+09:00', type:'tool_result', name:'shell', ok:true, output:'終了コード: 0\n---\ntotal 48\n-rw-r--r--  1 yuki  staff  12043 Jul 15 03:00 app-2026-07-15.log' },
+            { t:'2026-07-22T01:05:09+09:00', type:'step', step:2, of:30 },
+          ]}), stop: async()=>true, stopAll: async()=>1, emergencyStop: async()=>({stopped:1}) },
+        scheduler: { pause: async()=>false },
+        settings: { get: async()=>SETTINGS, save: async()=>SETTINGS, testProvider: async()=>({ok:true, models:['qwen/qwen3-coder-next','openai/gpt-oss-20b']}) },
+        mcp: { status: async()=>MCP, upsert: async()=>MCP, remove: async()=>MCP, connect: async()=>MCP, disconnect: async()=>MCP, call: async()=>'' },
+        sys: { pickFolder: async()=>null, openDataDir: async()=>{}, installCli: async()=>({installed:true, path:'/usr/local/bin/easyroo'}) },
+        stats: async () => STATS,
+        memory: { get: async()=>({stateChars:120, journalEntries:3, dir:'/Users/yuki/…/memory/r1', stateUpdatedAt:'2026-07-22T07:30:00+09:00', state:'# 現在の状態\n- 前回は5件処理', journal:['## 2026-07-22\n5件を処理']}), setState: async()=>({}), appendJournal: async()=>({}), clear: async()=>({}) },
+        deny: { categories: async()=>DENY, check: async(c)=>({denied:/rm -rf/.test(c), categoryId:'destructive', ruleId:'rm-rf', why:'rm -rf'}) },
+        on: () => () => {},
+      };
+      // URL の #view でビューを切り替えられるようにする
+    </script>
+    <script src="../src/shared/i18n.js"></script>
+    <script src="../src/renderer/app.js"></script>
+    <script>
+      // app.js の boot() がハンドラを登録した後に切り替える
+      document.addEventListener('DOMContentLoaded', () => {
+        const v = location.hash.slice(1);
+        if (v) document.querySelector(`.nav-item[data-view="${v}"]`)?.click();
+      });
+    </script>
+  </body>
+</html>
