@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2026 yuki_orita
+Copyright (c) 2026 Yuki Orita
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
